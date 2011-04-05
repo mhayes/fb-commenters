@@ -61,6 +61,21 @@ describe User do
     end
   end
   
+  describe 'retrieving friends' do
+    before do
+      @friends = [
+        {"name"=>"Mirko Froehlich", "id"=>"1225451"}, 
+        {"name"=>"Victoria Ransom", "id"=>"1226007"}, 
+        {"name"=>"Alain Chuard", "id"=>"1226772"}
+      ]
+      @graph.should_receive(:get_connections).with(@uid, 'friends').once.and_return(@friends)
+    end
+    
+    it 'should retrieve my friends from the graph api' do
+      @user.friends.should == @friends
+    end
+  end
+  
   describe 'retrieving likes' do
     before do
       @likes = [

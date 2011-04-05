@@ -14,6 +14,10 @@ class User
     @likes_by_category ||= likes.sort_by {|l| l['name']}.group_by {|l| l['category']}.sort
   end
   
+  def friends
+    graph.get_connections(uid, 'friends')
+  end
+  
   def comments(friend=uid)
     graph.get_connections(uid, 'feed', :fields => "comments", :limit => 100)
       .select{|entry| entry.has_key? "comments"}

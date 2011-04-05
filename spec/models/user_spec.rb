@@ -7,6 +7,60 @@ describe User do
     @user = User.new(@graph, @uid)
   end
 
+  describe 'retrieving comments' do
+    before do
+      @stream = [
+        {
+          "comments"=>
+          {
+            "data"=>
+            [
+              {
+                "id"=>"6411537_835012571015_2426200",
+                "from"=>
+                {
+                  "name"=>"Mark Hayes", 
+                  "id"=>"6411537"
+                },
+                "message"=>"What happened to the TPS report?",
+                "created_time"=>"2011-03-03T04:26:07+0000"
+              }
+            ],
+            "count"=>1
+        },
+          "id"=>"6411537_835012571015",
+          "created_time"=>"2011-03-03T03:22:40+0000"
+        }
+     ]
+     @graph.should_receive(:get_connections).with(@uid, 'feed', hash_including(:fields => "comments")).once.and_return(@stream)
+    end
+    
+    describe '#comments' do
+      before do
+        @friend_id = 43
+      end
+      
+      it 'should retrieve comments from the graph api' do
+        @user.comments(@friend_id).should == @stream
+      end
+      
+      it 'should group commenters by frequency' do
+        commenters = [
+          {
+            "from"=>
+            {
+              "name"=>"Mark Hayes", 
+              "id"=>"6411537"
+            },
+            "comments" => 1
+          }
+        ]
+        
+        @user.commenters(@friend_id).should == commenters
+      end
+    end
+  end
+  
   describe 'retrieving likes' do
     before do
       @likes = [
